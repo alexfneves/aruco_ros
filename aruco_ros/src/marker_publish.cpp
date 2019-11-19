@@ -61,6 +61,7 @@ private:
   std::string reference_frame_;
   double marker_size_;
   bool rotate_marker_axis_;
+  std::map<int, double> id_size_;
 
   // ROS pub-sub
   ros::NodeHandle nh_;
@@ -114,6 +115,14 @@ public:
     marker_msg_ = aruco_msgs::MarkerArray::Ptr(new aruco_msgs::MarkerArray());
     marker_msg_->header.frame_id = reference_frame_;
     marker_msg_->header.seq = 0;
+
+    XmlRpc::XmlRpcValue v;
+    nh_.param("makers_size", v, v);
+    for(int i =0; i < v.size(); i++)
+    {
+      XmlRpc::XmlRpcValue sublist = v[i];
+      id_size_[sublist["id"]] = sublist["size"];
+    }
   }
 
   bool getTransform(const std::string& refFrame,
